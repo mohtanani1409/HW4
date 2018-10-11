@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+
+<meta charset="utf-8">
+
+<style>
+
+
+
+body {
+
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+
+  width: 960px;
+
+  height: 500px;
+
+  position: relative;
+
+}
+
+
+
+/* stylesheet for your custom graph */
+
+
+
+.categories {
+
+  fill: none;
+
+  stroke: #fff;
+
+  stroke-linejoin: round;
+
+}
+
+
+
+.categories-choropleth {
+
+  fill: #ccc;
+
+}
+
+
+
+#tooltip-container {
+
+  position: absolute;
+
+  background-color: #fff;
+
+  color: #000;
+
+  padding: 10px;
+
+  border: 1px solid;
+
+  display: none;
+
+}
+
+
+
+#canvas svg {
+
+  border: 0px;
+
+}
+
+
+
+.tooltip_key {
+
+  font-weight: bold;
+
+}
+
+
+
+.tooltip_value {
+
+  margin-left: 20px;
+
+  float: right;
+
+}
+
+
+
+.x-axis {
+
+  fill: #000;
+
+}
+
+
+
+.chart {
+
+  background: #fff;
+
+  margin: 5px;
+
+}
+
+ 
+
+.chart .category-bar {
+
+  stroke: white;
+
+  fill: steelblue;
+
+}
+
+ 
+
+.chart .score {
+
+  fill: white;
+
+}
+
+ 
+
+.chart text.name {
+
+  fill: #000;
+
+}
+
+ 
+
+.chart line {
+
+  stroke: #c1c1c1;
+
+}
+
+ 
+
+.chart .rule {
+
+  fill: #000;
+
+}
+
+
+
+.main-category-text {
+
+  fill: #FF4A4A;
+
+}
+
+
+
+.main-category-bar {
+
+  stroke: #FF4A4A;
+
+  stroke-width: 2px;
+
+}
+
+
+.bar {
+    fill: #5f89ad;
+}
+.rect:hover{
+    fill: red;
+}
+
+.axis {
+    font-size: 12px;
+}
+
+.axis path,
+.axis line {
+    fill: none;
+    display: none;
+}
+
+.label {
+    font-size: 12px;
+}
+
+svg .rect:hover {
+    fill: red;
+}
+
+
+</style>
+
+
+<div id="title_bar" align="center">Losses and Damages in 2015 [$] </div>
+
+
+<div id="tooltip-container"></div>
+
+
+
+<div id="canvas-svg"></div>
+<div id="graphic"></div>
+
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/topojson/1.1.0/topojson.min.js"></script>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+
+
+
+<script>
+
+    function barChart() {
+
+
+        var data = [{
+            "name": "Federal or State Ordered Destruct",
+            "value": 9158,
+        },
+            {
+                "name": "Asian Soybean Rust",
+                "value": 12865,
+            },
+            {
+                "name": "Insufficient Chilling Hours",
+                "value": 34020,
+            },
+            {
+                "name": "Cyclone",
+                "value": 79596,
+            },
+            {
+                "name": "Falling Numbers",
+                "value": 87113,
+            },
+            {
+                "name": "Inability to Prepare Land for Irr",
+                "value": 177018,
+            },
+            {
+                "name": "Earthquake",
+                "value": 342177,
+            },
+            {
+                "name": "Hurricane/Tropical Depression",
+                "value": 426201 ,
+            },
+            {
+                "name": "Tornado",
+                "value": 586238,
+            },
+            {
+                "name": "Fire",
+                "value": 1078663,
+            },
+            {
+                "name": "House Burn (Pole Burn)",
+                "value": 1562353,
+            },
+            {
+                "name": "Failure Irrig Equip",
+                "value": 2140714,
+            },
+            {
+                "name": "Excess Sun",
+                "value": 3256572,
+            },
+            {
+                "name": "Insects",
+                "value": 9495289,
+            },
+            {
+                "name": "Other Causes",
+                "value": 14961378,
+            },
+            {
+                "name": "Wildfire",
+                "value": 17758484,
+            },
+            {
+                "name": "Hot Wind",
+                "value": 18566675,
+            },
+            {
+                "name": "Other (Snow-Lighting-Etc.",
+                "value": 22314552,
+            },
+            {
+                "name": "Mycotoxin (Aflatoxin)",
+                "value": 24858253,
+            },
+            {
+                "name": "Forst",
+                "value": 40405601,
+            },
+            {
+                "name": "Plant Disease",
+                "value": 48035764,
+            },
+            {
+                "name": "Wind/Excess Wind",
+                "value": 72767651,
+            },
+            {
+                "name": "Cold Wet Weather",
+                "value": 111742151,
+            },
+            {
+                "name": "Freeze",
+                "value": 118243521,
+            },
+            {
+                "name": "Flood",
+                "value": 120829047,
+            },
+            {
+                "name": "Cold Winter",
+                "value": 155502782,
+            },
+            {
+                "name": "Area Plan Crops Only",
+                "value": 156293862,
+            },
+            {
+                "name": "Decline in Price",
+                "value": 208217531,
+            },
+            {
+                "name": "Failure Irrig Supply",
+                "value": 250649477,
+            },
+            {
+                "name": "Heat",
+                "value": 416496757,
+            },
+            {
+                "name": "Hail",
+                "value": 418792903,
+            },
+            {
+                "name": "Drought",
+                "value": 801430613,
+            },
+            {
+                "name": "Excess Moisture/Precip/Rain",
+                "value": 2842780070,
+            }];
+
+//sort bars based on value
+        data = data.sort(function (a, b) {
+            return d3.descending (a.value, b.value);
+        })
+
+
+
+
+        //set up svg using margin conventions - we'll need plenty of room on the left for labels
+        var margin = {
+            top: 15,
+            right: 170,
+            bottom: 35,
+            left: 250
+        };
+
+        var width = 1250 - margin.left - margin.right,
+            height = 620 - margin.top - margin.bottom;
+
+        var svg = d3.select("#graphic").append("svg")
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom)
+            .append("g")
+            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+        var x = d3.scale.linear()
+            .range([0, width])
+            .domain([0, d3.max(data, function (d) {
+                return d.value;
+            })]);
+
+        var y = d3.scale.ordinal()
+            .rangeRoundBands([height, 0], .1)
+            .domain(data.map(function (d) {
+                return d.name;
+            }));
+
+        //make y axis to show bar names
+        var yAxis = d3.svg.axis()
+            .scale(y)
+            //no tick marks
+            .tickSize(0)
+            .orient("left");
+
+
+
+        var gy = svg.append("g")
+            .attr("class", "y axis")
+            .call(yAxis)
+
+        var bars = svg.selectAll(".bar")
+            .data(data)
+            .enter()
+            .append("g")
+
+
+        //append rects
+        bars.append("rect")
+            .attr("class", "bar")
+            .attr("y", function (d) {
+                return y(d.name);
+            })
+            .attr("height", y.rangeBand())
+            .attr("x", 0)
+            .attr("width", function (d) {
+                return x(d.value);
+            });
+
+        //add a value label to the right of each bar
+        bars.append("text")
+            .attr("class", "label")
+            //y position of the label is halfway down the bar
+            .attr("y", function (d) {
+                return y(d.name) + y.rangeBand() / 2 + 4;
+            })
+            //x position is 3 pixels to the right of the bar
+            .attr("x", function (d) {
+                return x(d.value) + 3;
+            })
+            .text(function (d) {
+                return d.value;
+            });
+
+
+    }
+
+d3.csv("damages.csv", function(err, data) {
+
+  var config = {"color1":"#c3e2ff","color2":"#08306B","mainCategory":"Washington","averageCategory":"Nation Average","stateDataColumn":"state_and_district_of_columbia","valueDataColumn":"obese_adults_number"}
+
+  
+
+  var WIDTH = 800, HEIGHT = 400;
+
+
+
+  var COLOR_COUNTS = 9;
+
+
+
+  var SCALE = 0.7;
+
+
+
+  var MAIN_CATEGORY = config.mainCategory;
+
+  var AVG_CATEGORY = config.averageCategory;
+
+
+
+  function Interpolate(start, end, steps, count) {
+
+      var s = start,
+
+          e = end,
+
+          final = s + (((e - s) / steps) * count);
+
+      return Math.floor(final);
+
+  }
+
+
+
+  function Color(_r, _g, _b) {
+
+      var r, g, b;
+
+      var setColors = function(_r, _g, _b) {
+
+          r = _r;
+
+          g = _g;
+
+          b = _b;
+
+      };
+
+
+
+      setColors(_r, _g, _b);
+
+      this.getColors = function() {
+
+          var colors = {
+
+              r: r,
+
+              g: g,
+
+              b: b
+
+          };
+
+          return colors;
+
+      };
+
+  }
+
+
+
+  function hexToRgb(hex) {
+
+      var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+
+      return result ? {
+
+          r: parseInt(result[1], 16),
+
+          g: parseInt(result[2], 16),
+
+          b: parseInt(result[3], 16)
+
+      } : null;
+
+  }
+
+
+
+  var COLOR_FIRST = config.color1, COLOR_LAST = config.color2;
+
+
+
+  var rgb = hexToRgb(COLOR_FIRST);
+
+
+
+  var COLOR_START = new Color(rgb.r, rgb.g, rgb.b);
+
+
+
+  rgb = hexToRgb(COLOR_LAST);
+
+  var COLOR_END = new Color(rgb.r, rgb.g, rgb.b);
+
+
+
+  var MAP_CATEGORY = config.stateDataColumn;
+
+  var MAP_VALUE = config.valueDataColumn;
+
+
+
+  var width = WIDTH,
+
+      height = HEIGHT;
+
+
+
+  var valueById = d3.map();
+
+
+
+  var startColors = COLOR_START.getColors(),
+
+      endColors = COLOR_END.getColors();
+
+
+
+  var colors = [];
+
+
+
+  for (var i = 0; i < COLOR_COUNTS; i++) {
+
+    var r = Interpolate(startColors.r, endColors.r, COLOR_COUNTS, i);
+
+    var g = Interpolate(startColors.g, endColors.g, COLOR_COUNTS, i);
+
+    var b = Interpolate(startColors.b, endColors.b, COLOR_COUNTS, i);
+
+    colors.push(new Color(r, g, b));
+
+  }
+
+
+
+  var quantize = d3.scale.quantize()
+
+      .domain([0, 1.0])
+
+      .range(d3.range(COLOR_COUNTS).map(function(i) { return i }));
+
+
+
+  var path = d3.geo.path();
+
+
+
+  var svg = d3.select("#canvas-svg").append("svg")
+
+      .attr("width", width)
+
+      .attr("height", height);
+
+
+
+  d3.tsv("https://s3-us-west-2.amazonaws.com/vida-public/geo/us-state-names.tsv", function(error, names) {
+
+
+
+  name_id_map = {};
+
+  id_name_map = {};
+
+
+
+  for (var i = 0; i < names.length; i++) {
+
+    name_id_map[names[i].name] = names[i].id;
+
+    id_name_map[names[i].id] = names[i].name;
+
+  }
+
+
+
+  data.forEach(function(d) {
+
+    var id = name_id_map[d[MAP_CATEGORY]];
+
+    valueById.set(id, +d[MAP_VALUE]);
+
+  });
+
+
+
+  quantize.domain([d3.min(data, function(d){ return +d[MAP_VALUE] }),
+
+    d3.max(data, function(d){ return +d[MAP_VALUE] })]);
+
+
+
+
+
+  function makeMap(us) {
+
+    svg.append("g")
+
+        .attr("class", "categories-choropleth")
+
+      .selectAll("path")
+
+        .data(topojson.feature(us, us.objects.states).features)
+
+      .enter().append("path")
+
+        .attr("transform", "scale(" + SCALE + ")")
+
+        .style("fill", function(d) {
+
+          if (valueById.get(d.id)) {
+
+            var i = quantize(valueById.get(d.id));
+
+            var color = colors[i].getColors();
+
+            return "rgb(" + color.r + "," + color.g +
+
+                "," + color.b + ")";
+
+          } else {
+
+            return "";
+
+          }
+
+        })
+
+        .attr("d", path)
+
+        .on("mousemove", function(d) {
+
+            var html = "";
+
+  
+
+            html += "<div class=\"tooltip_kv\">";
+
+            html += "<span class=\"tooltip_key\">";
+
+            html += id_name_map[d.id];
+
+            html += "</span>";
+
+            html += "<span class=\"tooltip_value\">";
+
+            html += (valueById.get(d.id) ? valueById.get(d.id) : "");
+
+            html += "";
+
+            html += "</span>";
+
+            html += "</div>";
+
+            
+
+            $("#tooltip-container").html(html);
+
+            $(this).attr("fill-opacity", "0.8");
+
+            $("#tooltip-container").show();
+
+
+
+            var coordinates = d3.mouse(this);
+
+
+
+            var map_width = $('.categories-choropleth')[0].getBoundingClientRect().width;
+
+
+
+            if (d3.event.pageX < map_width / 2) {
+
+              d3.select("#tooltip-container")
+
+                .style("top", (d3.event.pageY + 15) + "px")
+
+                .style("left", (d3.event.pageX + 15) + "px");
+
+            } else {
+
+              var tooltip_width = $("#tooltip-container").width();
+
+              d3.select("#tooltip-container")
+
+                .style("top", (d3.event.pageY + 15) + "px")
+
+                .style("left", (d3.event.pageX - tooltip_width - 30) + "px");
+
+            }
+
+        })
+
+        .on("mouseout", function() {
+
+                $(this).attr("fill-opacity", "1.0");
+
+                $("#tooltip-container").hide();
+
+            });
+
+
+
+    svg.append("path")
+
+        .datum(topojson.mesh(us, us.objects.states, function(a, b) { return a !== b; }))
+
+        .attr("class", "categories")
+
+        .attr("transform", "scale(" + SCALE + ")")
+
+        .attr("d", path);
+
+  }
+
+
+
+  d3.json("https://s3-us-west-2.amazonaws.com/vida-public/geo/us.json", function(error, us) {
+
+    makeMap(us);
+
+    barChart()
+
+
+  });
+
+
+
+  });
+
+});
+
+
+
+
+</script>
+
+
