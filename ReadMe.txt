@@ -1,1 +1,0 @@
-You have to have a server runing so java script reads data file
